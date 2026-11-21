@@ -1,0 +1,22 @@
+# secrets
+.env
+*.env
+
+# python
+__pycache__/
+*.pyc
+.venv/
+
+# data and model artifacts
+finevideo/
+data/
+cache/
+*.parquet
+*.pt
+*.engine
+*.onnx
+results.jsonl
+out/
+
+# keep the brief out of the public repo
+*.pdf

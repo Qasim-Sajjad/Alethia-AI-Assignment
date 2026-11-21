@@ -1,0 +1,8 @@
+# On Linux, the PyPI torch 2.7.1 wheels are built for CUDA 12.6.
+torch==2.7.1
+torchvision==0.22.1
+ultralytics==8.4.216
+av==18.1.0
+pyarrow==26.0.1
+numpy==2.4.6
+opencv-python==5.1.0.95
