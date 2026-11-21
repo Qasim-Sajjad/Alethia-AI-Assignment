@@ -134,6 +134,25 @@ empty detections for the rest of the batch** — a silent correctness bug. Fixes
 (peak 6.3 GB on the 3050) and `max_time_img=10` in our NMS call (a safety cutoff, not a detection
 setting; a one-frame reference never reaches it). Rerun had no warnings.
 
+### Measured on Colab L4 (24 GB, 12 vCPU Xeon 2.2 GHz, 53 GB RAM, Python 3.13), same 66 videos
+
+| Run | Wall time | Video-fps | GPU infer / wall | Min class F1 | People exact |
+|---|---|---|---|---|---|
+| Pipeline + adaptive, PyTorch FP16, 10 workers, batch 64 | 572 s | 920 | 520 / 572 s | 0.988 (phone) | 0.989 |
+| Pipeline + adaptive, **TensorRT 10 FP16** engine, 10 workers, batch 64 | **362 s** | **1,453** | 314 / 362 s | **0.984** (phone) | **0.988** |
+
+TensorRT per-class F1: person 0.9988, car 0.9951, dog 0.9899, laptop 0.9942, phone 0.9840; ±1 0.99995.
+Per frame: 1.09% of TensorRT frames differ in a 0.4-count from the FP32 reference (PyTorch FP16: 0.63%);
+matched confidences shift by median 0.0009, p99 0.011. Still GPU-bound (87% of wall in inference;
+decode ≈ 48 s per worker). **Decision: TensorRT FP16 engine is the final configuration.**
+
+TensorRT notes:
+- TensorRT **11** removed the FP16 builder flag; Ultralytics then requires NVIDIA ModelOpt "AutoCast"
+  mixed precision, which failed to install next to torch 2.7.1 (it pinned `torch==2.7.1+cu126`).
+  **TensorRT 10.16.1.11** keeps the plain FP16 flag and is pinned in `requirements.txt`.
+- Engine build (`prepare.py`, dynamic shapes, max batch 64): 1,060 s on the L4, untimed by the grader.
+  Execution context reserves ~9 GB of GPU memory for the max shape (64×640×640).
+
 ## Correctness check
 
 The pipeline dumps per-frame detections for the frames it ran; its `results.jsonl` is scored

@@ -6,3 +6,10 @@ av==18.1.0
 pyarrow==26.0.1
 numpy==2.4.6
 opencv-python==5.1.0.95
+# TensorRT engine export (prepare.py); run.py falls back to PyTorch FP16 if TensorRT is unavailable.
+# TensorRT 10, not 11: TensorRT 11 removed the FP16 builder flag and Ultralytics then needs NVIDIA ModelOpt
+# mixed precision, which does not install alongside torch 2.7.1.
+tensorrt-cu12==10.16.1.11
+onnx==1.23.2
+onnxslim==0.1.99
+onnxruntime-gpu==1.26.0
