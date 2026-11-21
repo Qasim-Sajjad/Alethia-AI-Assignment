@@ -68,30 +68,8 @@ def load(ref_dir: Path, split: str | None) -> list[Video]:
     return vids
 
 
-def pick(n: int, k: int) -> np.ndarray:
-    """k evenly spaced frame offsets centred in a second of n frames."""
-    if n <= k:
-        return np.arange(n)
-    return np.unique(((np.arange(k) + 0.5) * n / k).astype(int))
-
-
-def decide(c: np.ndarray) -> tuple[frozenset, int]:
-    m = len(c)
-    if m == 0:
-        return frozenset(), 0
-    hits = (c > 0).sum(axis=0)
-    objs = frozenset(CLASS_NAMES[j] for j in range(NC) if 2 * hits[j] >= m)
-    return objs, median_floor(c[:, PERSON])
-
-
-def ambiguous(c: np.ndarray, margin: float) -> bool:
-    """After stage 2: still too close to call? object fraction near 0.5, or people median weakly supported."""
-    m = len(c)
-    frac = (c > 0).sum(axis=0) / m
-    if np.any(np.abs(frac - 0.5) < margin):
-        return True
-    med = median_floor(c[:, PERSON])
-    return (c[:, PERSON] == med).sum() / m < 0.5
+# Same functions the pipeline uses (vidx/adaptive.py), so simulation and run.py cannot drift apart.
+from vidx.adaptive import ambiguous, decide, pick  # noqa: E402,F401
 
 
 def parse(strategy: str):

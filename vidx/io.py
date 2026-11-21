@@ -50,14 +50,31 @@ def rotate_frame(img: np.ndarray, rotation: int) -> np.ndarray:
     raise ValueError(f"unsupported rotation {rotation}")
 
 
+def to_bgr(frame: av.VideoFrame) -> np.ndarray:
+    """Decoded frame -> BGR uint8 with display rotation applied (same path as the reference)."""
+    img = frame.to_ndarray(format="bgr24")
+    if frame.rotation:
+        img = rotate_frame(img, frame.rotation)
+    return img
+
+
 def decode_frames(mp4: bytes) -> Iterator[tuple[int, np.ndarray]]:
-    """Yield (second_index, bgr_frame) for every decoded frame.
+    """Yield (second_index, bgr_frame) for every decoded frame."""
+    for sec, frame in iter_frames(mp4):
+        yield sec, to_bgr(frame)
+
+
+def iter_frames(mp4: bytes, threads: int | None = None) -> Iterator[tuple[int, av.VideoFrame]]:
+    """Yield (second_index, VideoFrame) for every decoded frame, without colour conversion.
 
     second_index = floor(t - t_first) using exact pts arithmetic.
+    threads: decoder threads (None = FFmpeg auto).
     """
     with av.open(io.BytesIO(mp4)) as c:
         vs = c.streams.video[0]
         vs.thread_type = "AUTO"
+        if threads is not None:
+            vs.codec_context.thread_count = threads
         tb = vs.time_base
         rate = vs.average_rate or vs.guessed_rate or 30
         pts0 = None
@@ -73,8 +90,4 @@ def decode_frames(mp4: bytes) -> Iterator[tuple[int, np.ndarray]]:
                 pts0 = t
             last_t = t
             rel = t - pts0
-            sec = max(int(rel // 1), 0)
-            img = frame.to_ndarray(format="bgr24")
-            if frame.rotation:
-                img = rotate_frame(img, frame.rotation)
-            yield sec, img
+            yield max(int(rel // 1), 0), frame

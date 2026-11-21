@@ -55,8 +55,8 @@ HF token lives in `.env` (`hf_fine_video_tk`) locally and in Colab Secrets — n
 | 1 | Baseline `run.py`: every frame, exactly correct (= "first working version" timing) | done (local 3050: ~48 fps) |
 | 2 | Reference cache (per-frame detections, 66 videos / 5.2 h from files 00000–00001) + `tools/score.py` | done: 66/66 videos, 526,328 frames, 18,806 seconds, 0 errors; 2.8 h at 52 fps on the 3050; baseline scores 100% |
 | 3 | Offline simulation of sampling strategies (fixed k/sec, adaptive coarse→refine) | done → `adapt:2:opb0.05:r7x0.15`, 19.3% of frames, min class F1 0.989 (see `10-sampling.md`) |
-| 4 | Speed: parallel decode workers, cross-video batching, TensorRT FP16, NVDEC, static-frame reuse | pending |
-| 5 | Robustness: damaged files, rotation, VFR, zero-length, resume after disconnect | pending |
+| 4 | Speed: parallel decode workers, cross-video batching, TensorRT FP16, NVDEC, static-frame reuse | pipeline built & verified: FP32 1,646 s (6.1×), **FP16 970 s (10.4×)** vs 10,085 s baseline on 3050; FP16 min class F1 0.988; TensorRT next (on L4) |
+| 5 | Robustness: damaged files, rotation, VFR, zero-length, resume after disconnect | done: all checks pass, 2 bugs fixed (`30-robustness.md`) |
 | 6 | Full 50-file run on L4 → `results.jsonl.gz`, `HARDWARE.md`, README, requirements, `ai_chats/` | pending |
 
 `WRITEUP.md` is written by the candidate, without AI.
