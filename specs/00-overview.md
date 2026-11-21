@@ -118,6 +118,8 @@ seconds each — enough to measure, but per-class F1 will be noisy.
 | 2026-11-21 | Decode with PyAV from in-memory bytes | Pixel-identical to OpenCV/ffmpeg, no temp files, exact pts |
 | 2026-11-21 | Cache detections down to conf 0.25, count at 0.4 | Same ≥0.4 set after NMS; lets us study borderline confidences |
 | 2026-11-21 | Torch 2.7.1 (CUDA 12.6 wheels) | Grader driver supports CUDA 12; PyPI Linux wheels are cu126 |
+| 2026-11-21 | Object F1 treated as **per class** (each ≥ 0.97 internally) | Stricter reading of "objects F1 ≥ 0.95"; passing it implies pooled passes |
+| 2026-11-21 | No full every-frame baseline on 50 files; baseline timed on the 66-video sample (3050: 10,085 s for 5.21 h, 52 fps) and again on L4; 50-file time extrapolated and stated as such | Full baseline ≈ a day of GPU; same-sample, same-GPU comparison gives a fair speedup |
 
 ## How to reproduce (local)
 
