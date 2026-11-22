@@ -67,10 +67,13 @@ Design notes, measurements and decisions are in `specs/` (`00-overview.md` first
   `tools/check_robustness.py` (damaged and unusual inputs), `tools/baseline_run.py` (first version:
   every frame, single process).
 
-| On the 66-video sample | Time | Worst class F1 | People exact |
-|---|---|---|---|
-| First version, every frame (RTX 3050) | 10,085 s | 1.000 | 1.000 |
-| Final: adaptive + TensorRT FP16 (L4) | 362 s | 0.984 | 0.988 |
+| On the 66-video sample (5.21 h of video) | GPU | Time | Worst class F1 | People exact |
+|---|---|---|---|---|
+| First version, every frame | RTX 3050 | 10,085 s | 1.000 (is the reference) | 1.000 |
+| First version, every frame | L4 | 5,493 s | ≈ 1.000 | 0.9998 |
+| Final: adaptive + TensorRT FP16 | L4 | 362 s | 0.984 | 0.988 |
+
+Full 50 files on the L4: 8,033 s (see `HARDWARE.md`).
 
 ## Repository layout
 

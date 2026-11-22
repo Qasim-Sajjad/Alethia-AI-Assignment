@@ -138,8 +138,18 @@ setting; a one-frame reference never reaches it). Rerun had no warnings.
 
 | Run | Wall time | Video-fps | GPU infer / wall | Min class F1 | People exact |
 |---|---|---|---|---|---|
+| Baseline: every frame, single process, FP32 (`tools/baseline_run.py`) | 5,493 s | 96 | — | 0.9999 pooled F1* | 0.9998* |
 | Pipeline + adaptive, PyTorch FP16, 10 workers, batch 64 | 572 s | 920 | 520 / 572 s | 0.988 (phone) | 0.989 |
 | Pipeline + adaptive, **TensorRT 10 FP16** engine, 10 workers, batch 64 | **362 s** | **1,453** | 314 / 362 s | **0.984** (phone) | **0.988** |
+
+\* The same every-frame method on a different GPU (L4 vs the 3050 that built the reference) is not
+bit-identical: float noise flips a few borderline detections. This is the noise floor of the reference.
+
+**Same GPU, same 66 videos: first version 5,493 s → final 362 s = 15.2× faster.**
+
+Full 50-file run (TensorRT, L4): 8,033 s, 1,650 videos, 12,981,615 frames decoded, 2,332,879 run
+(18.0%), 0 error lines, GPU inference 7,192 s (90% of wall), mean batch 44. The 66 sample videos inside
+it score identically to the separate TensorRT sample run.
 
 TensorRT per-class F1: person 0.9988, car 0.9951, dog 0.9899, laptop 0.9942, phone 0.9840; ±1 0.99995.
 Per frame: 1.09% of TensorRT frames differ in a 0.4-count from the FP32 reference (PyTorch FP16: 0.63%);
