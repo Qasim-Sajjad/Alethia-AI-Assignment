@@ -37,8 +37,14 @@ def main():
     except ImportError:
         print("TensorRT not installed; run.py will use the .pt model in FP16", file=sys.stderr)
         return
-    out = model.export(format="engine", half=True, dynamic=True, batch=args.batch, imgsz=640,
-                       workspace=8, simplify=True, verbose=False)
+    try:
+        out = model.export(format="engine", half=True, dynamic=True, batch=args.batch, imgsz=640,
+                           workspace=8, simplify=True, verbose=False)
+    except Exception as e:  # noqa: BLE001
+        print(f"TensorRT export failed ({type(e).__name__}: {e}); run.py will use the .pt model in FP16",
+              file=sys.stderr)
+        ENGINE.unlink(missing_ok=True)
+        return
     out = Path(out)
     if out.resolve() != ENGINE.resolve():
         shutil.move(str(out), ENGINE)

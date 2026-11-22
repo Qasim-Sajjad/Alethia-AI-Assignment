@@ -57,7 +57,7 @@ HF token lives in `.env` (`hf_fine_video_tk`) locally and in Colab Secrets — n
 | 3 | Offline simulation of sampling strategies (fixed k/sec, adaptive coarse→refine) | done → `adapt:2:opb0.05:r7x0.15`, 19.3% of frames, min class F1 0.989 (see `10-sampling.md`) |
 | 4 | Speed: parallel decode workers, cross-video batching, TensorRT FP16, NVDEC, static-frame reuse | pipeline built & verified: FP32 1,646 s (6.1×), **FP16 970 s (10.4×)** vs 10,085 s baseline on 3050; FP16 min class F1 0.988; TensorRT next (on L4) |
 | 5 | Robustness: damaged files, rotation, VFR, zero-length, resume after disconnect | done: all checks pass, 2 bugs fixed (`30-robustness.md`) |
-| 6 | Full 50-file run on L4 → `results.jsonl.gz`, `HARDWARE.md`, README, requirements, `ai_chats/` | pending |
+| 6 | Full 50-file run on L4 → `results.jsonl.gz`, `HARDWARE.md`, README, requirements, `ai_chats/` | full run done: **8,033 s**, 1,650 videos, 0 errors, 18.0% of frames inferred; 66-video subset scores min class F1 0.984 / exact 0.988; HARDWARE.md written |
 
 `WRITEUP.md` is written by the candidate, without AI.
 
